@@ -111,7 +111,7 @@ def input_error(func):
         except IndexError:
             return "Enter user name and phone."
         except AttributeError:
-            return "Attribute error: probably wrong contact data."
+            return "Contact not found."
         except Exception as e:
             return f"Unexpected error: {e}"
     return inner
@@ -123,7 +123,7 @@ def parse_input(user_input):
 def add_contact(command_parts, book):
     if len(command_parts) < 3:
         raise IndexError
-    name, phone = command_parts[1], command_parts[2]
+    _, name, phone = command_parts
     record = book.find(name)
     if not record:
         record = Record(name)
@@ -135,30 +135,24 @@ def add_contact(command_parts, book):
 def change_contact(command_parts, book):
     if len(command_parts) < 4:
         raise IndexError
-    name, old_phone, new_phone = command_parts[1], command_parts[2], command_parts[3]
+    name, old_phone, new_phone = command_parts
     record = book.find(name)
     record.edit_phone(old_phone, new_phone)
     return "Contact changed."
 
 @input_error
 def show_phone(command_parts, book):
-    if len(command_parts) < 2:
-        raise IndexError
     name = command_parts[1]
     record = book.find(name)
-    if not record:
-        return f"Contact {name} not found."
     phones = "; ".join(p.value for p in record.phones)
     return f"Phones for {name}: {phones}"
 
+
+
 @input_error
 def add_birthday(command_parts, book):
-    if len(command_parts) < 3:
-        raise IndexError
-    name, birthday = command_parts[1], command_parts[2]
+    _, name, birthday = command_parts
     record = book.find(name)
-    if not record:
-        return f"Contact {name} not found."
     record.add_birthday(birthday)
     return f"Birthday for {name} added."
 
@@ -168,11 +162,14 @@ def show_birthday(command_parts, book):
         raise IndexError
     name = command_parts[1]
     record = book.find(name)
-    if not record:
-        return f"Contact {name} not found."
+    if record is None:
+        raise AttributeError
     if not record.birthday:
         return f"{name} has no birthday set."
     return f"Birthday for {name}: {record.birthday.value}"
+
+
+
 
 @input_error
 def birthdays(command_parts, book):
