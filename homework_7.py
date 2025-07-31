@@ -158,12 +158,8 @@ def add_birthday(command_parts, book):
 
 @input_error
 def show_birthday(command_parts, book):
-    if len(command_parts) < 2:
-        raise IndexError
     name = command_parts[1]
     record = book.find(name)
-    if record is None:
-        raise AttributeError
     if not record.birthday:
         return f"{name} has no birthday set."
     return f"Birthday for {name}: {record.birthday.value}"
@@ -211,7 +207,7 @@ def main():
             result = show_phone(command_parts, book)        
         elif command == "add-birthday":
             result = add_birthday(command_parts, book)
-        elif command == "birthday":
+        elif command == "show-birthday":
             result = show_birthday(command_parts, book)
         elif command == "birthdays":
             result = birthdays(command_parts, book)
